@@ -1,5 +1,6 @@
-import tensorflow as tf
 import os
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
+import tensorflow as tf
 
 model = tf.keras.models.load_model("model.h5") # carregar modelo
 converter = tf.lite.TFLiteConverter.from_keras_model(model) #transformar em TFLite
