@@ -111,7 +111,9 @@ A técnica utilizada foi a Quantização de Faixa Dinâmica, aplicada através d
 
 optimizations = [tf.lite.Optimize.DEFAULT].
 
-Essa técnica converte os pesos do modelo de ponto flutuante de 32 bits para inteiros de 8 bits, reduzindo o tamanho do arquivo em até 4 vezes. As ativações (cálculos realizados durante a inferência) permanecem em float32, sendo convertidas dinamicamente durante a execução. Por afetar apenas os pesos, essa técnica reduz o tamanho do modelo com perda de acurácia geralmente pequena, sem exigir um dataset representativo adicional.
+Essa técnica converte os pesos do modelo de ponto flutuante de 32 bits para inteiros de 8 bits, reduzindo o tamanho do arquivo em até 4 vezes. As ativações (cálculos realizados durante a inferência) permanecem em float32, sendo convertidas dinamicamente durante a execução.
+
+Por afetar apenas os pesos, essa técnica reduz o tamanho do modelo com perda de acurácia geralmente pequena, sem exigir um dataset representativo adicional.
 
 ### 4️⃣ Resultados Obtidos
 
