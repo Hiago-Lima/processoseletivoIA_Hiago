@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import tensorflow as tf
 
@@ -10,12 +11,12 @@ import tensorflow as tf
 #   2. Rodar inferência em pelo menos 5 amostras do conjunto de teste do MNIST
 #   3. Imprimir no terminal, para cada amostra: classe predita vs. classe real
 # ---------------------------------------------------------------------------
-
-N_SAMPLES = 5
+# bem mais simples que os outros scripts, já que todo o script é praticamente dado direto
+N_SAMPLES = 10
 
 
 def main():
-    import os
+    #carregar interpretador
     script_dir = os.path.dirname(os.path.abspath(__file__))
     interpreter = tf.lite.Interpreter(model_path=os.path.join(script_dir, "model.tflite"))
     interpreter.allocate_tensors()
@@ -27,14 +28,19 @@ def main():
     x_test = np.expand_dims(x_test, axis=-1)
 
     print(f"Rodando inferencia em {N_SAMPLES} amostras usando model.tflite:\n")
+    acertos = 0 #variavel para contar acertos
     for i in range(N_SAMPLES):
         sample = np.expand_dims(x_test[i], axis=0).astype(input_details[0]["dtype"])
         interpreter.set_tensor(input_details[0]["index"], sample)
         interpreter.invoke()
         pred = interpreter.get_tensor(output_details[0]["index"])[0]
         predicted_class = int(np.argmax(pred))
-        print(f"Amostra {i + 1}: predito={predicted_class} | real={int(y_test[i])}")
+        real_class = int(y_test[i]) #coloquei direto em uma variavel
+        acertos+= (predicted_class == real_class)
+        status = "OK" if predicted_class == real_class else "ERRO"
+        print(f"Amostra {i+1}: Predita = {predicted_class} , Real = {real_class} [{status}]")
 
+    print(f"\nAcurácia: {acertos / N_SAMPLES * 100:.2f}% ({acertos}/{N_SAMPLES})")
 
 if __name__ == "__main__":
     main()
