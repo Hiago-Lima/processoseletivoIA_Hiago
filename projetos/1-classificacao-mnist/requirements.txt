@@ -1,2 +1,2 @@
-tensorflow>=2.12
+tensorflow==2.15 #travei na versão do tensorflow para evitar problemas de compatibilidade com o Keras e outras bibliotecas
 numpy
