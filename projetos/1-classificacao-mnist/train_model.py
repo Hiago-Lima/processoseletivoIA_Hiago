@@ -51,7 +51,7 @@ early_stop = keras.callbacks.EarlyStopping(monitor="val_loss", patience=3, resto
 history = model.fit(
     x_train, y_train,
     validation_data=(x_val, y_val),
-    epochs=15, # ciclos de treinamento, o modelo passa por todo o conjunto de dados de treinamento uma vez
+    epochs=15, # ciclo de treinamento, o modelo passa por todo o conjunto de dados de treinamento uma vez
     batch_size=64, # quantidade de amostras processadas antes de atualizar os pesos do modelo, aqui 64 amostras por vez
     callbacks=[early_stop], # aqui estamos passando a função de parada antecipada para o treinamento, para que ele pare se a perda de validação não melhorar por 3 épocas consecutivas
     verbose=2 # e aqui estamos definindo o nível de verbosidade, 2 significa que vamos ver uma barra de progresso para cada época, mostrando a perda e a acurácia de treinamento e validação
