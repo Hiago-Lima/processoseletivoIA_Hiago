@@ -97,7 +97,7 @@ Depois dos blocos convolucionais, a rede aplica um Flatten, seguido de uma camad
 
 A validação foi feita com um split manual e embaralhado (85% treino, 15% validação), usando uma seed fixa (np.random.default_rng) para garantir reprodutibilidade e evitar o viés de um corte sequencial sem embaralhamento.
 
-O EarlyStopping monitora a val_loss, com patience=3 (em vez do padrão, que é 0, e pararia o treino já na primeira flutuação) e restore_best_weights=True (que mantém os pesos da melhor época, não os da última). O treino parou na época 12 de um teto de 15, confirmando que o mecanismo funcionou como esperado.
+O EarlyStopping monitora a val_loss, com patience = 3 (em vez do padrão, que é 0, e pararia o treino já na primeira flutuação) e restore_best_weights = True (que mantém os pesos da melhor época, não os da última). O treino parou na época 7 de um teto de 15, confirmando que o mecanismo funcionou como esperado. Vale registrar como limitação da técnica que restore_best_weights=True só garante restaurar os melhores pesos se o EarlyStopping for de fato acionado antes do teto de épocas, o que ocorreu normalmente neste treino.
 
 ### 2️⃣ Bibliotecas Utilizadas
 
@@ -107,9 +107,7 @@ Numpy **1.26.4**
 
 ### 3️⃣ Técnica de Otimização do Modelo
 
-A técnica utilizada foi a Quantização de Faixa Dinâmica, aplicada através do TFLiteConverter com converter.
-
-optimizations = [tf.lite.Optimize.DEFAULT].
+A técnica utilizada foi a Quantização de Faixa Dinâmica, aplicada através do TFLiteConverter com `converter.optimizations = [tf.lite.Optimize.DEFAULT]`.
 
 Essa técnica converte os pesos do modelo de ponto flutuante de 32 bits para inteiros de 8 bits, reduzindo o tamanho do arquivo em até 4 vezes. As ativações (cálculos realizados durante a inferência) permanecem em float32, sendo convertidas dinamicamente durante a execução.
 
@@ -117,7 +115,7 @@ Por afetar apenas os pesos, essa técnica reduz o tamanho do modelo com perda de
 
 ### 4️⃣ Resultados Obtidos
 
-O modelo atingiu 99,02% de acurácia de validação (loss de validação: 0,0382), com o treino interrompido pelo EarlyStopping na época 7 de um teto de 15.
+O modelo atingiu 98,89% de acurácia de validação (loss de validação: 0,0425), com o treino interrompido pelo EarlyStopping na época 7 de um teto de 15. Além disso, o restore_best_weights nesse treino restaurou os pesos da época 5, batendo exatamente com o valor final impresso.
 
 Tamanho dos artefatos gerados:
 
@@ -129,13 +127,13 @@ Redução de **91,5%** após a quantização de faixa dinâmica.
 
 ### 5️⃣ Comentários Adicionais (Opcional)
 
-A maior dificuldade do desafio não esteve na modelagem em si, mas em identificar um problema de compatibilidade entre versões: o model.h5, salvo inicialmente com TensorFlow 2.21.0 (que usa Keras 3 por padrão), não conseguia ser recarregado nem pelo optimize_model.py, nem pelo script de validação automática do GitHub Actions, apresentando o erro GlorotUniform.**init**() got an unexpected keyword argument 'input_axes'.
+A maior dificuldade do desafio não esteve na modelagem em si, mas em identificar um problema de compatibilidade entre versões: o model.h5, salvo inicialmente com TensorFlow 2.21.0 (que usa Keras 3 por padrão), não conseguia ser recarregado nem pelo optimize_model.py, nem pelo script de validação automática do GitHub Actions, apresentando o erro `GlorotUniform.__init__()` got an unexpected keyword argument 'input_axes'.
 
 Diagnosticar a causa levou algumas tentativas: inicialmente suspeitou-se de descompasso de versão entre o ambiente local e o CI, mas ambos mostraram estar na mesma versão (2.21.0), descartando essa hipótese.
 
 Um relato semelhante — envolvendo outro parâmetro (batch_shape) mas o mesmo padrão de erro ao carregar modelos Keras 3 em .h5 foi encontrado em uma discussão da comunidade ST sobre deploy em Edge AI (https://community.st.com/t5/edge-ai/unrecognized-keyword-arguments-batch-shape-with-loading-keras/td-p/650324), reforçando que se tratava de um bug conhecido de auto-inconsistência do Keras 3 no formato .h5 legado. A rotina de escrita inclui parâmetros novos do inicializador que a rotina de leitura desse mesmo formato não repassa corretamente ao reconstruir a camada.
 
-A solução foi fixar tensorflow==2.15.0 no requirements.txt que a ultima versão que usa o Keras 2, evitando o Keras 3, cujo formato .h5 é maduro e não apresenta esse problema.
+A solução foi fixar tensorflow == 2.15.0 no requirements.txt que a ultima versão que usa o Keras 2, evitando o Keras 3, cujo formato .h5 é maduro e não apresenta esse problema.
 
 Antes de chegar nessa solução, também foi testado forçar os.environ["TF_USE_LEGACY_KERAS"] = "1" sem alterar o requirements.txt, o que não funcionou por depender do pacote tf_keras, não instalado no ambiente, confirmando que a correção precisava necessariamente passar pelas dependências declaradas, não só pelo código dos scripts.
 
@@ -288,8 +286,6 @@ Dois erros se destacam: a amostra 450 (3 predito como 5) é consistente com um p
 Já a amostra 446 (6 predito como 0) parece um caso pontual dessa imagem específica, sem um padrão sistemático claro na literatura consultada.
 
 ### Referências
-
-https://developers.google.com/edge/litert/conversion/tensorflow/quantization/post_training_quantization
 
 https://keras.io/api/layers/
 
