@@ -97,7 +97,7 @@ Depois dos blocos convolucionais, a rede aplica um Flatten, seguido de uma camad
 
 A validação foi feita com um split manual e embaralhado (85% treino, 15% validação), usando uma seed fixa (np.random.default_rng) para garantir reprodutibilidade e evitar o viés de um corte sequencial sem embaralhamento.
 
-O EarlyStopping monitora a val_loss, com patience = 3 (em vez do padrão, que é 0, e pararia o treino já na primeira flutuação) e restore_best_weights = True (que mantém os pesos da melhor época, não os da última). O treino parou na época 7 de um teto de 15, confirmando que o mecanismo funcionou como esperado. Vale registrar como limitação da técnica que restore_best_weights=True só garante restaurar os melhores pesos se o EarlyStopping for de fato acionado antes do teto de épocas, o que ocorreu normalmente neste treino.
+O EarlyStopping monitora a val_loss, com patience = 3 (em vez do padrão, que é 0, e pararia o treino já na primeira flutuação) e restore_best_weights = True (que mantém os pesos da melhor época, não os da última). O treino parou na época 8 de um teto de 15, confirmando que o mecanismo funcionou como esperado. Vale registrar como limitação da técnica que restore_best_weights=True só garante restaurar os melhores pesos se o EarlyStopping for de fato acionado antes do teto de épocas, o que ocorreu normalmente neste treino.
 
 ### 2️⃣ Bibliotecas Utilizadas
 
@@ -279,7 +279,7 @@ Amostra 499: Predita = 0 , Real = 0 [OK]
 
 Amostra 500: Predita = 6 , Real = 6 [OK]
 
-Com apenas 10 amostras, o acerto de 100% não é muito representativo, em uma amostra maior (500 imagens), a acurácia observada foi de 99,20% (496/500), próxima aos 99,02% medidos na validação durante o treino, confirmando que a quantização não degradou o desempenho do modelo.
+Com apenas 10 amostras, o acerto de 100% não é muito representativo, em uma amostra maior (500 imagens), a acurácia observada foi de 99,00% (495/500), próxima aos 98,89% medidos na validação durante o treino, confirmando que a quantização não degradou o desempenho do modelo.
 
 Dois erros se destacam: a amostra 450 (3 predito como 5) é consistente com um padrão documentado na literatura, 3 e 5 estão entre os pares de dígitos mais frequentemente confundidos em classificadores treinados no MNIST (https://arxiv.org/pdf/2411.12127).
 
